@@ -5,6 +5,7 @@ import { Card, CardContent } from './ui/card';
 import { Progress } from './ui/progress';
 import { Badge } from './ui/badge';
 import { useEffect, useState } from 'react';
+import { Arena3D } from './3d/Arena3D';
 
 interface FightingArenaProps {
   player1: Character;
@@ -102,6 +103,22 @@ export function FightingArena({
           <Badge variant="destructive" className="text-lg px-4 py-2">
             {currentPlayer.displayName}'s Turn
           </Badge>
+        </motion.div>
+
+        {/* 3D Arena View */}
+        <motion.div 
+          className="mb-6"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Arena3D
+            player1={player1}
+            player2={player2}
+            currentTurn={currentTurn}
+            gameStatus={gameStatus}
+            winner={winner}
+          />
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

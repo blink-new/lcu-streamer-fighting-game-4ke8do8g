@@ -3,6 +3,8 @@ import { Character } from '../types/Character';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { CharacterPreview3D } from './3d/CharacterPreview3D';
+import { useState } from 'react';
 
 interface CharacterSelectProps {
   characters: Character[];
@@ -20,6 +22,7 @@ export function CharacterSelect({
   onStartGame 
 }: CharacterSelectProps) {
   const selectingPlayer = !selectedPlayer1 ? 'player1' : !selectedPlayer2 ? 'player2' : null;
+  const [hoveredCharacter, setHoveredCharacter] = useState<string | null>(null);
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
@@ -42,7 +45,12 @@ export function CharacterSelect({
               <p className="text-lg font-bold text-blue-400 mb-2">Player 1</p>
               {selectedPlayer1 ? (
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">{selectedPlayer1.avatar}</span>
+                  <div className="w-16 h-16 rounded-lg overflow-hidden">
+                    <CharacterPreview3D 
+                      character={selectedPlayer1} 
+                      isSelected={true}
+                    />
+                  </div>
                   <div>
                     <p className="font-bold text-white">{selectedPlayer1.displayName}</p>
                     <p className="text-sm text-gray-400">Ready to fight!</p>
@@ -61,7 +69,12 @@ export function CharacterSelect({
               <p className="text-lg font-bold text-red-400 mb-2">Player 2</p>
               {selectedPlayer2 ? (
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">{selectedPlayer2.avatar}</span>
+                  <div className="w-16 h-16 rounded-lg overflow-hidden">
+                    <CharacterPreview3D 
+                      character={selectedPlayer2} 
+                      isSelected={true}
+                    />
+                  </div>
                   <div>
                     <p className="font-bold text-white">{selectedPlayer2.displayName}</p>
                     <p className="text-sm text-gray-400">Ready to fight!</p>
@@ -81,6 +94,7 @@ export function CharacterSelect({
           {characters.map((character, index) => {
             const isSelected = character.id === selectedPlayer1?.id || character.id === selectedPlayer2?.id;
             const canSelect = !isSelected && selectingPlayer;
+            const isHovered = hoveredCharacter === character.id;
             
             return (
               <motion.div
@@ -98,12 +112,22 @@ export function CharacterSelect({
                         : 'opacity-50 cursor-not-allowed bg-slate-800/30'
                   }`}
                   onClick={() => canSelect && onSelectCharacter(character, selectingPlayer)}
+                  onMouseEnter={() => setHoveredCharacter(character.id)}
+                  onMouseLeave={() => setHoveredCharacter(null)}
                 >
                   <div className={`absolute inset-0 bg-gradient-to-br ${character.color} opacity-20`} />
                   
                   <CardContent className="relative p-6">
+                    {/* 3D Character Preview */}
+                    <div className="mb-4">
+                      <CharacterPreview3D 
+                        character={character} 
+                        isSelected={isSelected}
+                        isHovered={isHovered}
+                      />
+                    </div>
+                    
                     <div className="text-center mb-4">
-                      <div className="text-6xl mb-3">{character.avatar}</div>
                       <h3 className="text-xl font-bold text-white mb-2">{character.displayName}</h3>
                       <p className="text-sm text-gray-400 mb-3">{character.description}</p>
                       <p className="text-xs italic text-yellow-400">"{character.catchphrase}"</p>
